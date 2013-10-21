@@ -12,6 +12,7 @@ This is a basic use case:
 
 ```ruby
 target = 'foo@bar.org'
+ctx = { 'name' => 'Luc' }
 
 # Create default kinds
 %w(request new_event).each do |kind_name|
@@ -23,15 +24,15 @@ kind  = CustomEmails::EmailKind.find_by!(name: 'request')
 email = CustomEmails::Email.create(
   locale:       :fr,
   kind:         kind,
-  subject:      'Bonjour monde !',
-  content_text: 'Bonne chance...'
+  subject:      'Bonjour {{ name }} !',
+  content_text: 'Bonne chance {{ name }}...'
 )
 
 # Send via the Email object
-email.to(target).deliver
+email.to(target, ctx).deliver
 
 # Use the mailer to send an email if you don't have the Email objet
-CustomEmails::Mailer.custom_email_to(target, 'request').deliver
+CustomEmails::Mailer.custom_email_to(target, 'request', nil, context: ctx).deliver
 ```
 
 This is a basic use case with a scope object:
@@ -50,16 +51,16 @@ acc = Account.first
 email = account.emails.create(
   locale:       :fr,
   kind:         kind,
-  subject:      'Bonjour monde !',
-  content_text: 'Bonne chance...',
+  subject:      'Bonjour {{ name }} !',
+  content_text: 'Bonne chance {{ name }}...',
   content_html: '<b>Bonne change...</b>' # Optional
 )
 
 # Deliver the email to somebody
-email.to(target).deliver
+email.to(target, ctx).deliver
 
 # Or do it direclty with the mailer
-CustomEmails::Mailer.custom_email_to(target, 'request', acc).deliver
+CustomEmails::Mailer.custom_email_to(target, 'request', acc, ctx).deliver
 ```
 
 This scope object allows you to have multiple email per kind.
@@ -89,10 +90,6 @@ That's all!
 ## Limitations
 
 - Only active record is supported
-
-## Todo
-
-- Add some templating capabilities with liquid markup.
 
 # Licence
 
