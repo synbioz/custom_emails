@@ -12,14 +12,14 @@ class MailerTest < ActionMailer::TestCase
     ActionMailer::Base.deliveries.last
   end
 
-  test 'email content_text is used when custom_email_to is called' do
+  test 'email interpolated attributes are used when custom_email_to is called' do
     kind  = CustomEmails::EmailKind.create(name: :kind_1)
-    email = CustomEmails::Email.create(kind: kind, locale: :en, subject: 'Hello world!', content_text: 'Good luck...')
-    mail  = CustomEmails::Mailer.custom_email_to('test@example.com', :kind_1)
+    email = CustomEmails::Email.create(kind: kind, locale: :en, subject: 'Hello {{ name }}!', content_text: 'Good luck {{ name }}...')
+    mail  = CustomEmails::Mailer.custom_email_to('test@example.com', :kind_1, nil, context: {'name' => 'Luc'})
     mail.deliver
 
-    assert(last_email.subject == 'Hello world!')
-    assert(last_email.body == 'Good luck...')
+    assert(last_email.subject == 'Hello Luc!')
+    assert(last_email.body == 'Good luck Luc...')
     assert(last_email.from.include?(@sender_email))
     assert(last_email.to.include?('test@example.com'))
   end

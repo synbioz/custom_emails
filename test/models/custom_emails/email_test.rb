@@ -38,5 +38,19 @@ module CustomEmails
       assert subject.kind_of?(Mail::Message)
       assert subject.deliver
     end
+
+    test "email has interpolation via liquid on subject, content_text and content_html" do
+      CustomEmails.default_from = 'sender@example.org'
+
+      email = Email.new
+      assert email.respond_to?(:interpolated_subject)
+      assert email.respond_to?(:interpolated_content_text)
+      assert email.respond_to?(:interpolated_content_html)
+
+      context = {'firstname' => 'Nicolas'}
+      email.subject = 'Hello {{ firstname }}!'
+
+      assert email.interpolated_subject(context) == 'Hello Nicolas!'
+    end
   end
 end

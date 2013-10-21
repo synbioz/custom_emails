@@ -10,11 +10,13 @@ if defined?(ActionMailer)
       end
 
       def email_to(email, dest, options={})
-        sender = options[:from] || CustomEmails.default_from
+        context = options[:context] || {}
+        sender  = options[:from]    || CustomEmails.default_from
+        subject = email.interpolated_subject(context)
 
-        mail(to: dest, from: sender, subject: email.subject) do |format|
-          format.html { email.content_html } unless email.content_html.blank?
-          format.text { email.content_text }
+        mail(to: dest, from: sender, subject: subject) do |format|
+          format.html { email.interpolated_content_html(context) } if email.content_html.present?
+          format.text { email.interpolated_content_text(context) }
         end
       end
     end
