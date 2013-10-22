@@ -77,6 +77,7 @@ Add the tables to your database with:
 
 ```console
 rake custom_emails:install:migrations
+rake db:migrate
 ```
 
 Add the initializer to configure the gem with:
