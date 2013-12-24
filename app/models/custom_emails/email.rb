@@ -1,7 +1,7 @@
-require 'liquid'
-
 module CustomEmails
   class Email < ActiveRecord::Base
+    include Templatable
+
     if CustomEmails.scoped
       belongs_to :emailable, polymorphic: true
     end
@@ -18,34 +18,10 @@ module CustomEmails
 
     # Create an interpolated version of some attributes
     %w(subject content_text content_html).each do |attr|
-      class_eval "def interpolated_#{attr}(context) ; interpolate(#{attr}, context) end"
-    end
-
-    # Checks if a content is valid for interpolation.
-    #
-    # @return [Boolean]
-    def self.valid_template?(content)
-      return true if content.blank?
-
-      template = ::Liquid::Template.parse(content)
-      template.errors.empty?
+      class_eval "def interpolated_#{attr}(context) ; self.class.interpolate(#{attr}, context) end"
     end
 
     private
-
-      # Use liquid to get the result of template interpretation.
-      #
-      # @param [String] the template
-      # @param [Hash] the variable tree that have to be inserted into the template
-      # @retrun [String]
-      def interpolate(content, context)
-        template = ::Liquid::Template.parse(content)
-        if template.errors.empty?
-          template.render(context)
-        else
-          content
-        end
-      end
 
       def ensure_valid_templates
         if content_text.present? && !self.class.valid_template?(content_text)

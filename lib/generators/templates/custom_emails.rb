@@ -8,6 +8,7 @@ require 'custom_emails/orm/active_record'
 # custom_emails with this option. The default is true
 #
 #CustomEmails.scoped = false
+#CustomEmails.scoped_sms = false
 
 # You can customize the default sender of the custom emails here.
 # This will be used by CustomEmails::Mailer#custom_email_to

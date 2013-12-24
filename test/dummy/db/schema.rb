@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20131018164626) do
+ActiveRecord::Schema.define(version: 20131224105500) do
 
   create_table "custom_emails_email_kinds", force: true do |t|
     t.string   "name"
@@ -37,6 +37,29 @@ ActiveRecord::Schema.define(version: 20131018164626) do
   add_index "custom_emails_emails", ["kind_id", "emailable_id"], name: "index_custom_emails_emails_on_kind_id_and_emailable_id"
   add_index "custom_emails_emails", ["kind_id", "locale", "emailable_id", "emailable_type"], name: "unique_w_kind_locale_and_emailable", unique: true
   add_index "custom_emails_emails", ["locale"], name: "index_custom_emails_emails_on_locale"
+
+  create_table "custom_emails_short_message_kinds", force: true do |t|
+    t.string   "name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "custom_emails_short_message_kinds", ["name"], name: "index_custom_emails_short_message_kinds_on_name", unique: true
+
+  create_table "custom_emails_short_messages", force: true do |t|
+    t.integer  "messageable_id"
+    t.string   "messageable_type"
+    t.integer  "kind_id"
+    t.string   "locale"
+    t.text     "content"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "custom_emails_short_messages", ["kind_id", "locale", "messageable_id", "messageable_type"], name: "unique_w_kind_locale_and_messageable", unique: true
+  add_index "custom_emails_short_messages", ["kind_id", "messageable_id"], name: "index_w_kind_and_messageable"
+  add_index "custom_emails_short_messages", ["locale"], name: "index_custom_emails_short_messages_on_locale"
+  add_index "custom_emails_short_messages", ["messageable_id"], name: "index_custom_emails_short_messages_on_messageable_id"
 
   create_table "examples", force: true do |t|
   end
